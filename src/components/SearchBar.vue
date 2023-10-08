@@ -12,7 +12,11 @@
                 spellcheck="false"
                 v-model="q"
                 @input="onSearchInputChange"
+                list="browserList"
             />
+            <datalist id="browserList" style="width: 1000px">
+                <option v-for="suggestion in suggestions">{{ suggestion }}</option>
+            </datalist>
             <i
                 id="search_form_input_clear"
                 class="icon-cross"
@@ -23,7 +27,7 @@
                 class="search-bar__button" 
                 type="submit" 
                 id="search_button" 
-                value="Search"
+                value="🔍︎"
                 />
         </form>
     </div>
@@ -31,12 +35,13 @@
 
 <script>
 export default {
+    props: ['suggestions'],
     data() {
         return {
             offset: 0,
             limit: 20,
             region: "",
-            q: "",
+            q: new URLSearchParams(window.location.search).get('q'),
             isInputNotEmpty: false
         }
     },
@@ -57,6 +62,7 @@ export default {
             else this.isInputNotEmpty = false;
         },
         onClearIconClick(event, item) {
+            this.isInputNotEmpty = false;
             this.q = "";
         }
     }
@@ -67,30 +73,41 @@ export default {
 <style>
 .search-bar {
     font: inherit;
-    font-size: 100%;
     vertical-align: baseline;
     height: 100%;
 }
 
 .search-bar__form {
-    border: 3px solid rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
+    border: 2px solid rgb(0 0 0 / 12%);
+    border-radius: 30px;
     display: flex;
     justify-content: space-between;
     height: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box-shadow property */
+    background-color: white;
+}
+.search-bar__form:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar__form:has(.search-bar__input:focus) {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .search-bar__input {
     width: 100%;
+    font-size: 15px;
     border: none;
     outline: none;
-    margin: 5px;
+    margin: 5px 5px 5px 15px;
 }
 
 .search-bar__button {
-   border: none;
-   border-top-right-radius: 6px;
-   border-bottom-right-radius: 6px;
+    border: none;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    font-size: 23px;
+    width: 60px;
 }
 
 .search-bar__button:hover {
@@ -104,7 +121,7 @@ export default {
   width: 32px;
   height: 32px;
   opacity: 0.3;
-  visibility: hidden;
+    display: none;
 }
 .icon-cross:hover {
   opacity: 1;
@@ -125,6 +142,6 @@ export default {
   transform: rotate(-45deg);
 }
 .visible {
-    visibility: visible;
+    display: block;
 }
 </style>
